@@ -1,2 +1,3 @@
-# rialix_core
-[experiment] riak_core written in elixir
+# RialixCore
+
+**[experiment] riak_core written in elixir**
