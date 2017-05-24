@@ -2,8 +2,10 @@ defmodule RialixCore.App do
   @moduledoc """
   """
   use Application
+  require Logger
 
   @doc """
+
   """
   def start(_start_type, _start_args) do
     maybe_delay_start()
@@ -22,5 +24,14 @@ defmodule RialixCore.App do
     :ok
   end
 
-  
+  defp maybe_delay_start() do
+    case Application.get_env :rialix_core, :delayed_start do
+      {:ok, delay} ->
+        Logger.info "Delaying rialix_core startup as requested"
+        :timer.sleep delay
+      _ ->
+        :ok
+    end
+  end
+
 end
