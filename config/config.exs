@@ -15,5 +15,5 @@ config :rialix_core,
   handoff_ip: '0.0.0.0',
   dist_send_buf_size: 393216,
   dist_recv_buf_size: 786432
-
+import_config "#{Mix.env}.exs"
 ## TODO exometer defults

@@ -67,6 +67,17 @@ defmodule RialixCore.Application do
 
   defp validate_ring_state_directory_exists do
     ring_state_dir = Application.get_env(:rialix_core, :ring_state_dir)
+    with {:ok, _} <- Application.ensure_all_started(:rialix_core),
+         :ok      <- :filelib.ensure_dir(Path.join(ring_state_dir, "dummy"))
+    do
+      :ok
+    else
+      {:error, {app, reason}} ->
+        Logger.error ("Application :#{app} failed to start, reason:\n" <> inspect(reason))
+        throw({:error, :failed_to_start_dependencies})
+      {:error, ring_reason} ->
+        Logger.error "Ring state directory #{ring_state_dir} does not exist, and could not be created: #{:lager.posix_error(ring_reason)}"
+        throw({:error, :invalid_ring_state_dir})
+    end
   end
-
 end
