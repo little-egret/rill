@@ -34,6 +34,7 @@ defmodule RialixCore.Application do
     end
   end
 
+<<<<<<< Updated upstream
   defp safe_register_cluster_info do
     ClusterInfo.register_app :rialix_core_cinfo_core
   catch
@@ -65,4 +66,9 @@ defmodule RialixCore.Application do
     end
   end
 
+=======
+  defp validate_ring_state_directory_exists do
+    ring_state_dir = Application.get_env(:rialix_core, :ring_state_dir)
+  end
+>>>>>>> Stashed changes
 end
