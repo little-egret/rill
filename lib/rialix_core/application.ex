@@ -1,4 +1,4 @@
-defmodule RialixCore.App do
+defmodule RialixCore.Application do
   @moduledoc """
   """
   use Application
@@ -15,12 +15,10 @@ defmodule RialixCore.App do
   end
 
   @doc """
-  
+
   """
   def stop(_state) do
     Logger.info "Stopped application rialix_core."
     :ok
   end
-
-  
 end
