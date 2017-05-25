@@ -1,6 +1,6 @@
-defmodule RialixCoreTest do
+defmodule RillTest do
   use ExUnit.Case
-  doctest RialixCore
+  doctest Rill
 
   test "the truth" do
     assert 1 + 1 == 2

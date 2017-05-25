@@ -1,4 +1,4 @@
-defmodule RialixCore.Application do
+defmodule Rill.Application do
   @moduledoc """
   """
   use Application
@@ -13,29 +13,29 @@ defmodule RialixCore.Application do
     :ok = safe_register_cluster_info
     :ok = add_bucket_deafults
 
-    start_rialix_core_sup
+    start_rill_sup
   end
 
   @doc """
 
   """
   def stop(_state) do
-    Logger.info "Stopped application rialix_core."
+    Logger.info "Stopped application rill."
     :ok
   end
 
   defp maybe_delay_start() do
-    case Application.get_env :rialix_core, :delayed_start do
+    case Application.get_env :rill, :delayed_start do
       nil ->
         :ok
       delay ->
-        Logger.info "Delaying rialix_core startup as requested"
+        Logger.info "Delaying rill startup as requested"
         :timer.sleep delay
     end
   end
 
   defp safe_register_cluster_info do
-    ClusterInfo.register_app :rialix_core_cinfo_core
+    ClusterInfo.register_app :rill_cinfo_core
   catch
     _, _ ->
       :ok
@@ -43,21 +43,21 @@ defmodule RialixCore.Application do
 
   defp add_bucket_defaults do
     :default_type
-    |> RialixCore.Bucket.Type.defaults()
-    |> RialixCore.Bucket.append_bucket_defaults()
+    |> Rill.Bucket.Type.defaults()
+    |> Rill.Bucket.append_bucket_defaults()
 
     :ok
   end
 
-  defp start_rialix_core_sup do
-    case RialixCore.Supervisor.start_link do
+  defp start_rill_sup do
+    case Rill.Supervisor.start_link do
       {:ok, pid} ->
         :ok = register_applications
         :ok = add_ring_event_handler
 
         :ok = register_capabilities
         :ok = init_cli_registry
-        :ok = RialixCore.Throttle.init
+        :ok = Rill.Throttle.init
 
         {:ok, pid}
       {:error, reason} ->
@@ -66,8 +66,8 @@ defmodule RialixCore.Application do
   end
 
   defp validate_ring_state_directory_exists do
-    ring_state_dir = Application.get_env(:rialix_core, :ring_state_dir)
-    with {:ok, _} <- Application.ensure_all_started(:rialix_core),
+    ring_state_dir = Application.get_env(:rill, :ring_state_dir)
+    with {:ok, _} <- Application.ensure_all_started(:rill),
          :ok      <- :filelib.ensure_dir(Path.join(ring_state_dir, "dummy"))
     do
       :ok

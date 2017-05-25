@@ -1,6 +1,6 @@
-defmodule RialixCore do
+defmodule Rill do
   @moduledoc """
-  Documentation for RialixCore.
+  Documentation for Rill.
   """
 
   @doc """
@@ -8,7 +8,7 @@ defmodule RialixCore do
 
   ## Examples
 
-      iex> RialixCore.hello
+      iex> Rill.hello
       :world
 
   """

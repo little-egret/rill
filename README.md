@@ -1,4 +1,4 @@
-# RialixCore
+# Rill
 
 **[experiment] riak_core written in elixir**
 
