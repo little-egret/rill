@@ -49,6 +49,7 @@ defmodule Rill.Application do
   end
 
   defp add_bucket_deafults do
+    Rill.Bucket.append_bucket_defaults(Rill.BucketType.defaults(:default_type)),
     :ok
   end
 
