@@ -1,13 +1,12 @@
 defmodule Rill.Application do
-  @moduledoc """
-  """
+  # See http://elixir-lang.org/docs/stable/elixir/Application.html
+  # for more information on OTP Applications
+  @moduledoc false
+
   use Application
   require Logger
 
-  @doc """
-
-  """
-  def start(_start_type, _start_args) do
+  def start(_type, _args) do
     maybe_delay_start
     :ok = validate_ring_state_directory_exists
     :ok = safe_register_cluster_info
@@ -16,52 +15,13 @@ defmodule Rill.Application do
     start_rill_sup
   end
 
-  @doc """
-
-  """
-  def stop(_state) do
-    Logger.info "Stopped application rill."
-    :ok
-  end
-
-  defp maybe_delay_start() do
+  defp maybe_delay_start do
     case Application.get_env :rill, :delayed_start do
       nil ->
         :ok
       delay ->
-        Logger.info "Delaying rill startup as requested"
-        :timer.sleep delay
-    end
-  end
-
-  defp safe_register_cluster_info do
-    ClusterInfo.register_app :rill_cinfo_core
-  catch
-    _, _ ->
-      :ok
-  end
-
-  defp add_bucket_defaults do
-    :default_type
-    |> Rill.Bucket.Type.defaults()
-    |> Rill.Bucket.append_bucket_defaults()
-
-    :ok
-  end
-
-  defp start_rill_sup do
-    case Rill.Supervisor.start_link do
-      {:ok, pid} ->
-        :ok = register_applications
-        :ok = add_ring_event_handler
-
-        :ok = register_capabilities
-        :ok = init_cli_registry
-        :ok = Rill.Throttle.init
-
-        {:ok, pid}
-      {:error, reason} ->
-        {:error, reason}
+        Logger.info "Delaying rill startup as requested."
+        Process.sleep delay
     end
   end
 
@@ -80,4 +40,23 @@ defmodule Rill.Application do
         throw({:error, :invalid_ring_state_dir})
     end
   end
+
+
+  ## TODO
+
+  def safe_register_cluster_info do
+    :cluster_info.register_app(:rill_cinfo_core)
+  catch
+    _, _ ->
+      :ok
+  end
+
+  def add_bucket_deafults do
+    :ok
+  end
+
+  defp start_rill_sup do
+    {:ok, self()}
+  end
+
 end
