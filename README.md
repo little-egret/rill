@@ -1,4 +1,4 @@
-# Rill
+# RillUmbrella
 
 **[experiment] riak_core written in elixir**
 

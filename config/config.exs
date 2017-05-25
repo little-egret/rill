@@ -1,22 +1,17 @@
+# This file is responsible for configuring your application
+# and its dependencies with the aid of the Mix.Config module.
 use Mix.Config
 
-config :rill,
-  cluster_name: "default",
-  platform_data_dir: "data",
-  ring_creation_size: 64,
-  gossip_interval: 60000,
-  target_n_val: 4,
-  wants_claim_fun: {:rill_claim, :default_wants_claim},
-  choose_claim_fun: {:rill_claim, :default_choose_claim},
-  vnode_inactivity_timeout: 60000,
-  handoff_concurrency: 2,
-  disble_http_nagle: true,
-  handoff_port: 8099,
-  handoff_ip: '0.0.0.0',
-  dist_send_buf_size: 393216,
-  dist_recv_buf_size: 786432
+# By default, the umbrella project as well as each child
+# application will require this configuration file, ensuring
+# they all use the same configuration. While one could
+# configure all applications here, we prefer to delegate
+# back to each application for organization purposes.
+import_config "../apps/*/config/config.exs"
 
-  
-## TODO exometer defults
-
-import_config "#{Mix.env}.exs"
+# Sample configuration (overrides the imported configuration above):
+#
+#     config :logger, :console,
+#       level: :info,
+#       format: "$date $time [$level] $metadata$message\n",
+#       metadata: [:user_id]
