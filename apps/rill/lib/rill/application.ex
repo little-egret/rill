@@ -7,12 +7,12 @@ defmodule Rill.Application do
   require Logger
 
   def start(_type, _args) do
-    maybe_delay_start
-    :ok = validate_ring_state_directory_exists
-    :ok = safe_register_cluster_info
-    :ok = add_bucket_deafults
+    maybe_delay_start()
+    :ok = validate_ring_state_directory_exists()
+    :ok = safe_register_cluster_info()
+    :ok = add_bucket_deafults()
 
-    start_rill_sup
+    start_rill_sup()
   end
 
   defp maybe_delay_start do
@@ -36,22 +36,19 @@ defmodule Rill.Application do
         Logger.error ("Application :#{app} failed to start, reason:\n" <> inspect(reason))
         throw({:error, :failed_to_start_dependencies})
       {:error, ring_reason} ->
-        Logger.error "Ring state directory #{ring_state_dir} does not exist, and could not be created: #{:lager.posix_error(ring_reason)}"
+        Logger.error "Ring state directory #{ring_state_dir} does not exist, and could not be created: #{inspect ring_reason}"
         throw({:error, :invalid_ring_state_dir})
     end
   end
 
-
-  ## TODO
-
-  def safe_register_cluster_info do
-    :cluster_info.register_app(:rill_cinfo_core)
+  defp safe_register_cluster_info do
+    ClusterInfo.register_app(:"Elixir.Rill.CinfoCore")
   catch
     _, _ ->
       :ok
   end
 
-  def add_bucket_deafults do
+  defp add_bucket_deafults do
     :ok
   end
 
