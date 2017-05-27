@@ -4,15 +4,12 @@ defmodule Rill do
   """
 
   @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> Rill.hello
-      :world
 
   """
-  def hello do
-    :world
+  def bucket_fixups do
+    case Application.get_env(:rill, :bucket_fixups) do
+      nil  -> []
+      mods -> mods
+    end
   end
 end

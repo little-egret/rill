@@ -4,20 +4,16 @@ defmodule Rill.Bucket.Prop do
   """
 
   @doc """
-  append_defaults(Items) when is_list(Items) ->
-      OldDefaults = app_helper:get_env(riak_core, default_bucket_props, []),
-      NewDefaults = merge(OldDefaults, Items),
-      FixedDefaults = case riak_core:bucket_fixups() of
-          [] -> NewDefaults;
-          Fixups ->
-              riak_core_ring_manager:run_fixups(Fixups, default, NewDefaults)
-      end,
-      application:set_env(riak_core, default_bucket_props, FixedDefaults),
-      %% do a noop transform on the ring, to make the fixups re-run
-      catch(riak_core_ring_manager:ring_trans(fun(Ring, _) ->
-                                                      {new_ring, Ring}
-                                              end, undefined)),
-      ok.
+  
+  """
+  @spec merge([{atom, any}], [{atom, any}]) :: [{atom, any}]
+  def merge(overriding, other) do
+    :lists.ukeymerge(1, :lists.ukeysort(1, overriding),
+                     :lists.ukeysort(1, other))
+  end
+
+  @doc """
+
   """
   @spec append_defaults([{atom, any}]) :: :ok
   def append_defaults(items) when is_list(items) do
@@ -26,12 +22,12 @@ defmodule Rill.Bucket.Prop do
     fixed_defaults = case Rill.bucket_fixups() do
       [] -> new_defaults
       fixups ->
-        Rill.RingManager.run_fixups(fixups, default, new_defaults)
+        Rill.Ring.Manager.run_fixups(fixups, :default, new_defaults)
     end
     Application.put_env(:rill, :default_bucket_props, fixed_defaults)
   
     ## I don't know how to do with erlang `catch`
-    Rill.RingManager.ring_trans(fn ring, _ ->
+    Rill.Ring.Manager.ring_trans(fn ring, _ ->
                                     {:new_ring, ring}
                                 end, nil)
     :ok

@@ -19,7 +19,7 @@ defmodule Rill.Mixfile do
   # Type "mix help compile.app" for more information
   def application do
     # Specify extra applications you'll use from Erlang/Elixir
-    [extra_applications: [:logger],
+    [extra_applications: [:logger, :lager],
      mod: {Rill.Application, []}]
   end
 
@@ -38,7 +38,9 @@ defmodule Rill.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      {:cluster_info, in_umbrella: true}
+      {:cluster_info, in_umbrella: true},
+      {:elixometer, "~> 1.2"},
+      {:lager, "~> 3.4", override: true}
     ]
   end
 end
