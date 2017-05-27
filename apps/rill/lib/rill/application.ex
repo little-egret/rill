@@ -42,7 +42,7 @@ defmodule Rill.Application do
   end
 
   defp safe_register_cluster_info do
-    ClusterInfo.register_app(:"Elixir.Rill.CinfoCore")
+    ClusterInfo.register_app(Rill.CinfoCore)
   catch
     _, _ ->
       :ok
@@ -54,7 +54,76 @@ defmodule Rill.Application do
   end
 
   defp start_rill_sup do
-    {:ok, self()}
+    case Rill.Supervisor.start_link do
+      {:ok, pid} ->
+        :ok = register_applications()
+        :ok = add_ring_event_handler()
+        
+        :ok = register_capabilities()
+        :ok = init_cli_registry()
+        :ok = Rill.Throttle.init()
+
+        {:ok, pid}
+      {:error, reason} ->
+        {:error, reason}
+    end
+  end
+
+  defp register_applications do
+    Rill.register(:rill, [stat_mod: Rill.Stat,
+                          permissions: [:get_bucket,
+                                        :set_bucket,
+                                        :get_bucket_type,
+                                        :set_bucket_type]])
+    :ok
+  end
+
+  defp add_ring_event_handler do
+    :ok = Rill.add_guarded_handler(:rill_ring_handler, [])
+  end
+
+  defp init_cli_registry do
+    Rill.Registry.load_schema()
+    Rill.Registry.register_node_finder()
+    Rill.Registry.register_cli()
+    :ok
+  end
+
+@doc """
+register_capabilities() ->
+    Capabilities = [[{riak_core, vnode_routing},
+                     [proxy, legacy],
+                     legacy,
+                     {riak_core,
+                      legacy_vnode_routing,
+                      [{true, legacy}, {false, proxy}]}],
+                    [{riak_core, staged_joins},
+                     [true, false],
+                     false],
+                    [{riak_core, resizable_ring},
+                     [true, false],
+                     false],
+                    [{riak_core, fold_req_version},
+                     [v2, v1],
+                     v1],
+                    [{riak_core, security},
+                     [true, false],
+                     false],
+                    [{riak_core, bucket_types},
+                     [true, false],
+                     false],
+                    [{riak_core, net_ticktime},
+                     [true, false],
+                     false]],
+    lists:foreach(
+      fun(Capability) ->
+              apply(riak_core_capability, register, Capability)
+      end,
+      Capabilities),
+    ok.
+"""
+  defp register_capabilities do
+    :ok
   end
 
 end
