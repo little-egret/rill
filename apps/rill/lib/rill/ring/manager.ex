@@ -59,4 +59,19 @@ defmodule Rill.Ring.Manager do
         {:reply, :not_changed, state}
     end
   end
+
+  ## persist a new ring file, set the global value and notify any listeners
+  defp prune_write_notify_ring(ring) do
+    state2 = prune_write_ring(ring, state)
+    Rill.Ring.Event.ring_update(ring)
+    state2
+  end
+
+  defp prune_write_ring(ring, state) do
+    Rill.Ring.check_tainted(ring, "Error: Persisting tainted ring")
+    :ok = Rill.Ring.Manager.prune_ringfiles()
+    _ = do_write_ringfile(ring)
+    state2 = set_ring(ring, state)
+    state2
+  end
 end
