@@ -1,11 +1,12 @@
 defmodule Rill.Ring.Manager do
   @moduledoc """
-  
+
   """
   require Logger
+  use GenServer
 
   @doc """
-  
+
   """
   def run_fixups([], _bucket, bucket_props) do
     bucket_props
@@ -42,7 +43,7 @@ defmodule Rill.Ring.Manager do
         state2 = prune_write_notify_ring(new_ring, state)
         Rill.Gossip.random_recursive_gossip(new_ring)
         {:reply, {:ok, new_ring}, state2}
-      {set_only, new_ring} ->
+      {:set_only, new_ring} ->
         state2 = prune_write_ring(new_ring, state)
         {:reply, {:ok, new_ring}, state2}
       {:reconciled_ring, new_ring} ->
